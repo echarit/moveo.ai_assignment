@@ -1,11 +1,11 @@
 **<h1>How to Setup and Run</h1>**
 <h4>
-- Create a new python enviroment or go to an existing one using pyenv, venv, conda etc.
-- run pip install -r requirements.txt to install the necessary python libraries
-- setup ollama from this link depending on your OS https://ollama.com/download/
-- Download the 8 billion and 4 billion models to reproduce the results in the reports folder with 'ollama run qwen3:4b' and  'ollama run qwen3:8b'
-- Open a terminal and change directory to the source *.py files
-- run python evaluate_rag.py or python3 evaluate_rag.py depending on your virtual enviroment
+- Create a new python enviroment or go to an existing one using pyenv, venv, conda etc. <br>
+- run pip install -r requirements.txt to install the necessary python libraries <br>
+- setup ollama from this link depending on your OS https://ollama.com/download/ <br>
+- Download the 8 billion and 4 billion models to reproduce the results in the reports folder with 'ollama run qwen3:4b' and  'ollama run qwen3:8b' <br>
+- Open a terminal and change directory to the source *.py files <br>
+- run python evaluate_rag.py or python3 evaluate_rag.py depending on your virtual enviroment <br>
 </h4>
 
 **<h1>Configuration file</h1>**
@@ -44,4 +44,5 @@ The evaluator adds the following 6 columns to evaluation dataset csv file:
 
 **<h1>Aggregate Statistics:</h1>**
 - Having defined the evaluation metric as above then aggregate statistics can be calculated as simple average across the rows of the metrics defined above. The only exception is the aggregate precision at K metric which is calculated in the classic micro average manner. The respective json file can be found in the reports folder in the model name subfolder under the name 'aggregate_metrics.json'
+
 
