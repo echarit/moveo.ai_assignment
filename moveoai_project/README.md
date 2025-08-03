@@ -10,14 +10,14 @@
 
 **<h1>Configuration file</h1>**
 <h4>
-- The script uses the toml python library. Inside the config folder there is a config.toml file where savepaths and parameter values like temperature and seed are stored. 
-- Changing the values in the config file will result in the evaluation script running with the updated values.
-- Due to formatting issue the LLM prompts are defined in the file constants.py and are imported from there by the evaluation script.
+- The script uses the toml python library. Inside the config folder there is a config.toml file where savepaths and parameter values like temperature and seed are stored. <br>
+- Changing the values in the config file will result in the evaluation script running with the updated values. <br>
+- Due to formatting issue the LLM prompts are defined in the file constants.py and are imported from there by the evaluation script. <br>
 
 **<h1>Input and Output</h1>**
 <h4>
-- The input file is inside the 'data' directory
-- Output is stored in the reports folder and inside subfolders named after the LLM model name used for the evaluation.
+- The input file is inside the 'data' directory <br>
+- Output is stored in the reports folder and inside subfolders named after the LLM model name used for the evaluation. <br>
 </h4>
 
 
@@ -44,5 +44,6 @@ The evaluator adds the following 6 columns to evaluation dataset csv file:
 
 **<h1>Aggregate Statistics:</h1>**
 - Having defined the evaluation metric as above then aggregate statistics can be calculated as simple average across the rows of the metrics defined above. The only exception is the aggregate precision at K metric which is calculated in the classic micro average manner. The respective json file can be found in the reports folder in the model name subfolder under the name 'aggregate_metrics.json'
+
 
 
