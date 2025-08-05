@@ -23,7 +23,7 @@ As stated in the introduction the automatic evaluation script (also referred as 
 
 A typical RAG system works by retrieving a set of N (ordered) relevant documents by using a vector similarity metric between a vectorized version of the user’s query and a set or vector database of vectorized documents. Such a metric might be the cosine similarity inside said vector space. Ideally the process/model that produced the vectorized versions of both ends shall be the same. In any case this process can be easily reversed engineered in order to evaluate the quality of the retrieval part of our RAG system. In particular to generate the Average Retrieved similarity for a given data point (user query) the following steps are followed:
 
-* **Pick a vectorization model**:  For this task the "qwen14:b" and "qwen8:b" LLMs  model from the *sentence\_transormers* library was chosen as it is one of the best model for producing sentence/document embeddings which in combination with its small size make it an ideal candidate for this step. More complex models may also be used for this task.  
+* **Pick a vectorization model**:  For this task the "qwen4:b" and "qwen8:b" LLMs  model from the *sentence\_transormers* library was chosen as it is one of the best model for producing sentence/document embeddings which in combination with its small size make it an ideal candidate for this step. More complex models may also be used for this task.  
 * **Vectorization**: Using "all-MiniLM-L6-v2" , vectorize both the Current User Query concatenated with the Conversation History column and each element from the  Fragment texts column which are separated by the newline (‘\\n) character.   
 * **Calculate Similarities**: For each user query calculate N similarities where N is the number of fragment texts respective to that user query.  
 * **Average Similarity**: Compute the mean of N similarities from the previous step. The final result is this row’s Average Retrieved Similarity metric.
@@ -47,7 +47,7 @@ To testify the vectorization quality of the model in the Appendix the average ve
 
 The next metric is called LLM precision@k and it is a variant of the classical precision@k metric that is used to evaluate information retrieval methods. Its definition is the same as the one used in information retrieval with a simple twist: Since there are no dataset labels which denote which retrieved document is relevant and which is not, an LLM will be leveraged to classify a document as relevant or not with the use of a simple prompt. The prompt for this metric can be found in the file [constants.py](http://constants.py) in the delivered project under the name LLM\_PRECISION\_AT\_K\_PROMPT. The process to evaluate a fragment text as ‘relevant’ or not goes as follows:
 
-* **Pick an  evaluator model:**  For this task the "qwen14:b" and "qwen8:b" LLMs  will serve as the evaluator of a fragment text with respect to the Current User Question column.  
+* **Pick an  evaluator model:**  For this task the "qwen4:b" and "qwen8:b" LLMs  will serve as the evaluator of a fragment text with respect to the Current User Question column.  
 * **Structured output**: The model is instructed through its prompt to generate a strictly formatted json file. For each fragment text two fields are returned from the LLM. One named “answer” which is binary valued YES or NO and another one named ‘explanation’ which provides feedback regarding the LLM’s decision. These json files are stored in the *data/{model\_name/llm\_precision\_at\_metrics.json* directory for logging, debugging and transparency reasons.  
 * **Aggregate Relevant documents:** For each fragment text classified as ‘relevant’ by the LLM w.r.t. to the user question, raise the “True Positive” number by one.Then LLM precision@k metric can be calculated as an image of its traditional counterpart. This number is stored in an auxiliary column named True Positives which will be later used to calculate an aggregate version of this LLM precision@k metric in a micro average matter.
 
@@ -59,7 +59,7 @@ Note: For this use case the fragmented texts Possible candidate metrics adjacent
 
 The next metric is called Verbosity and it is a fairly simple one. Given the absence of user instructions in the Current User Question column as well as in the assignment’s instructions whatsoever it is fairly logical to assume that a RAG answer should be short and to the point without lengthy responses. The verbosity metric aims to measure exactly that again with the use of an LLM and the use of a simple prompt. The prompt for this metric can be found in the file [constants.py](http://constants.py) in the delivered project under the name VERBOSITY\_PROMPT. The process is fairly similar with the LLM precision@ k metric in terms of its design. In particular:
 
-* **Pick an evaluator model:**  For this task the "qwen14:b" and "qwen8:b" LLMs  will serve as the evaluator of the Assistant Answer column w.r.t to the Current User Question one.  
+* **Pick an evaluator model:**  For this task the "qwen4:b" and "qwen8:b" LLMs  will serve as the evaluator of the Assistant Answer column w.r.t to the Current User Question one.  
 * **Structured output**: The model is instructed through its prompt to generate a strictly formatted json file. For each assistant answer text two fields are returned from the LLM. One named “score” ranging from 1-5 depending on the verbosity of the answer with 1 for lowest and 5 for highest verbosity. The final score is then inverted i.e. 1/score and stored in the Verbiosity column in the evaluated\_dataset.csv file. in order to reflect an actual verbosity score in the aggregate statistics calculation step. The aforementioned json files are stored in the *data/{model\_name/verbosity\_metrics.json* directory for logging, debugging and transparency reasons.
 
 **3.4) Alignment**
@@ -80,7 +80,7 @@ Table 2:  The way the Alignment metric values are calculated by the automatic ev
 Note: The Alignment metric is not concerned with the truth value of the RAG’s response (faithfulness) as this is the evaluation dimension of the next and final metric. It is concerned only with Alignment as it is defined in Table 2\.   
 Given all that the process to calculate the Alignment metric goes like this:
 
-* **Pick an evaluator model:** For this task the "qwen14:b" and "qwen8:b" LLMs will serve as the evaluator of the for both the Auxiliary User Intent column as well as the Alignment. After the User Intent is calculated for a given User query, that query along with its user intent value  and the Assistant Answer will be fed into the LLM. The prompt for this step can be found in the file [constants.py](http://constants.py) in the delivered project under the name ALIGNMENT\_PROMPT.   
+* **Pick an evaluator model:** For this task the "qwen4:b" and "qwen8:b" LLMs will serve as the evaluator of the for both the Auxiliary User Intent column as well as the Alignment. After the User Intent is calculated for a given User query, that query along with its user intent value  and the Assistant Answer will be fed into the LLM. The prompt for this step can be found in the file [constants.py](http://constants.py) in the delivered project under the name ALIGNMENT\_PROMPT.   
 * **Structured output**: The model is instructed through its prompt to generate a strictly formatted json file. For each assistant answer text two fields are returned from the LLM. One named “alignment” with the binary values True or False according to table 2\. The final score is then converted to numerals (0, 1\) and stored in the Alignment column in the evaluated\_dataset.csv file.  The aforementioned json files are stored in the *data/{model\_name/alignment\_metrics.json* directory for logging, debugging and transparency reasons.
 
 Therefore the sum of the column for all 25 user queries reflects the total system’s ability to produce appropriate answers.
@@ -89,7 +89,7 @@ Therefore the sum of the column for all 25 user queries reflects the total syste
 
 The next and final score is the established metric of faithfulness. As its name suggests this metric reflects the degree to which the RAG’s response is adjacent to objective reality. It could also be defined as the unit measure of the system’s hallucination. For simplicity the faithfulness metric will take values in the range of \[1-5\] where 1 means a very factually wrong or hallucinative RAG response while 5 means a very concise answer respectively. In order to classify the Faithfulness of an Assistant’s Answer w.r.t to a User Query, the automatic evaluator will be using a distinct prompt found in the file [constants.py](http://constants.py) in the delivered project under the name FAITHFULNESS\_PROMPT. Given all that the process to calculate the Alignment metric goes like this:
 
-* **Pick an evaluator model:**  For this task the "qwen14:b" and "qwen8:b" LLMs  will serve as the evaluator of the Assistant Answer column w.r.t to the Current User Question one.  
+* **Pick an evaluator model:**  For this task the "qwen4:b" and "qwen8:b" LLMs  will serve as the evaluator of the Assistant Answer column w.r.t to the Current User Question one.  
 * **Structured output**: The model is instructed through its prompt to generate a strictly formatted json file. For each assistant answer text two fields are returned from the LLM. One named “faithfulness” with the values in the range {0-5} and another one called “explanation” where the model’s justification for its scoring is stored. The aforementioned json files are stored in the *data/{model\_name/faithfulness\_metrics.json* directory for logging, debugging and transparency reasons.
 
 4) **Aggregate statistics**  
@@ -98,7 +98,7 @@ The next and final score is the established metric of faithfulness. As its name 
      
    
 
-| Model: Qwen14:b |  |
+| Model: Qwen8:b |  |
 | ----- | ----- |
 | Aggregagate Metric | Value |
 | Average Retrieved Similarity | 0.769 |
@@ -109,7 +109,7 @@ The next and final score is the established metric of faithfulness. As its name 
 
 Table 3:  Aggregate statistics of the Qwen 14:b model..
 
-| Model: Qwen8:b |  |
+| Model: Qwen4:b |  |
 | ----- | ----- |
 | Aggregate Metric | Value |
 | Average Retrieved Similarity | 0.769 |
